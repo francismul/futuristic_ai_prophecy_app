@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oracle Mode</title>
+
+    <!-- PWA Meta Tags -->
+    <meta
+      name="description"
+      content="A futuristic AI prophecy generator that reveals mystical predictions"
+    />
+    <meta name="theme-color" content="#10b981" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Oracle Mode" />
+    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="msapplication-config" content="browserconfig.xml" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="192x192" href="assets/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="assets/icon-512.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/icon-16.png" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="assets/css/oracle-styles.css" />
+  </head>
+  <body class="bg-gradient-to-b from-black via-gray-950 to-black">
+    <!-- Three.js Canvas Container -->
+    <div
+      id="canvas-container"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      "
+    ></div>
+
+    <!-- Main Content -->
+    <div id="app" style="position: relative; z-index: 10">
+      <!-- Landing State -->
+      <div
+        id="landing"
+        class="h-screen flex flex-col items-center justify-center"
+      >
+        <div class="text-center space-y-6">
+          <h1
+            class="text-6xl md:text-8xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent"
+          >
+            ORACLE MODE
+          </h1>
+          <p class="text-emerald-200 text-xl md:text-2xl font-light">
+            Scroll to reveal your prophecy
+          </p>
+          <div class="text-4xl text-emerald-400 scroll-hint">⬇︎</div>
+        </div>
+      </div>
+
+      <!-- Prophecies Container -->
+      <div id="prophecies-container" class="min-h-screen">
+        <!-- Prophecies will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <script src="assets/js/oracle-main.js"></script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((registration) => {
+              console.log("SW registered: ", registration);
+
+              // Check for updates
+              registration.addEventListener("updatefound", () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener("statechange", () => {
+                  if (
+                    newWorker.state === "installed" &&
+                    navigator.serviceWorker.controller
+                  ) {
+                    // New content is available, prompt user to refresh
+                    if (confirm("New version available! Refresh to update?")) {
+                      window.location.reload();
+                    }
+                  }
+                });
+              });
+            })
+            .catch((registrationError) => {
+              console.log("SW registration failed: ", registrationError);
+            });
+        });
+      }
+
+      // Add to home screen prompt
+      let deferredPrompt;
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+
+        // Show install button after a delay
+        setTimeout(() => {
+          showInstallPromotion();
+        }, 5000);
+      });
+
+      function showInstallPromotion() {
+        if (deferredPrompt) {
+          const installBanner = document.createElement("div");
+          installBanner.id = "install-banner";
+          installBanner.innerHTML = `
+            <div style="
+              position: fixed;
+              bottom: 20px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: linear-gradient(135deg, #10b981, #059669);
+              color: white;
+              padding: 15px 25px;
+              border-radius: 15px;
+              box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+              z-index: 1000;
+              font-family: system-ui, -apple-system, sans-serif;
+              text-align: center;
+              animation: slideUp 0.5s ease-out;
+            ">
+              <div style="margin-bottom: 10px; font-weight: bold;">📱 Install Oracle Mode</div>
+              <div style="margin-bottom: 15px; font-size: 14px; opacity: 0.9;">
+                Get instant access to prophecies offline
+              </div>
+              <button id="install-btn" style="
+                background: rgba(255, 255, 255, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 8px;
+                cursor: pointer;
+                margin-right: 10px;
+                font-weight: 500;
+              ">Install</button>
+              <button id="dismiss-btn" style="
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 500;
+              ">Maybe Later</button>
+            </div>
+          `;
+
+          // Add slide up animation
+          const style = document.createElement("style");
+          style.textContent = `
+            @keyframes slideUp {
+              from { transform: translate(-50%, 100px); opacity: 0; }
+              to { transform: translate(-50%, 0); opacity: 1; }
+            }
+          `;
+          document.head.appendChild(style);
+
+          document.body.appendChild(installBanner);
+
+          document
+            .getElementById("install-btn")
+            .addEventListener("click", () => {
+              deferredPrompt.prompt();
+              deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === "accepted") {
+                  console.log("User accepted the install prompt");
+                }
+                deferredPrompt = null;
+                installBanner.remove();
+              });
+            });
+
+          document
+            .getElementById("dismiss-btn")
+            .addEventListener("click", () => {
+              installBanner.remove();
+            });
+        }
+      }
+
+      // Handle successful installation
+      window.addEventListener("appinstalled", () => {
+        console.log("PWA was installed");
+        deferredPrompt = null;
+      });
+    </script>
+  </body>
+</html>
