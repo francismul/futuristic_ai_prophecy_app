@@ -95,17 +95,50 @@ npm run build
 
 ## 🚀 Deployment
 
-### Automatic Deployment (GitHub Pages)
-The application automatically deploys to GitHub Pages when you push to the main branch:
+### Tag-Based Deployment (GitHub Pages)
+The application deploys to GitHub Pages when you create and push version tags:
 
-1. Push your changes to the `main` branch
-2. GitHub Actions will automatically build and deploy
-3. Visit your GitHub Pages URL to see the live application
-
-### Manual Deployment
+#### Create and Deploy a New Version
 ```bash
-# Deploy to GitHub Pages manually
-npm run deploy
+# Create a version tag
+git tag v1.0.0
+git push origin v1.0.0
+
+# Or create an annotated tag
+git tag -a v1.0.0 -m "Release version 1.0.0"
+git push origin v1.0.0
+```
+
+#### Tag Format
+- Use semantic versioning: `v1.0.0`, `v1.1.0`, `v2.0.0`
+- The workflow triggers on any tag starting with `v`
+- Each tag creates a separate deployment
+
+#### View Deployment Status
+1. Go to your repository on GitHub
+2. Click the "Actions" tab
+3. See deployment status for each tag
+4. Check the "Deployments" section for live URLs
+
+### Benefits of Tag-Based Deployment
+- **Version Control**: Each deployment is tied to a specific version
+- **Rollback Support**: Can redeploy any previous version by pushing the tag again
+- **Clean Releases**: Only deploy when you're ready to release
+- **Multiple Environments**: Can have different tags for staging/production
+- **Release Notes**: Tags can include release notes and changelogs
+
+### Development Workflow
+```bash
+# Regular development on main branch
+git checkout main
+# Make your changes...
+git add .
+git commit -m "Add new features"
+git push origin main
+
+# When ready to release
+git tag v1.1.0
+git push origin v1.1.0
 ```
 
 ## 📱 PWA Installation
