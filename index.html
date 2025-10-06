@@ -11,7 +11,7 @@
       content="A futuristic AI prophecy generator that reveals mystical predictions"
     />
     <meta name="theme-color" content="#10b981" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
@@ -85,8 +85,6 @@
           navigator.serviceWorker
             .register("/sw.js")
             .then((registration) => {
-              console.log("SW registered: ", registration);
-
               // Check for updates
               registration.addEventListener("updatefound", () => {
                 const newWorker = registration.installing;

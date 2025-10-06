@@ -1200,11 +1200,11 @@ class OracleApp {
 
   createProphecyElement(prophecy, index) {
     const container = document.createElement("div");
-    container.className = "h-screen flex items-center justify-center px-4";
+    container.className = "h-screen flex items-center justify-center px-4 prophecy-snap-container";
     container.dataset.index = index;
 
     const prophecyBox = document.createElement("div");
-    prophecyBox.className = `h-[60vh] w-full max-w-4xl flex items-center justify-center prophecy-container ${
+    prophecyBox.className = `h-[80vh] w-full max-w-5xl flex flex-col prophecy-container ${
       prophecy.isCritical ? "critical-pulse" : ""
     }`;
 
@@ -1213,15 +1213,168 @@ class OracleApp {
       prophecy.isCritical
         ? "border border-red-500/50 shadow-red-500/20"
         : "border border-emerald-400/30 shadow-emerald-400/20"
-    } rounded-2xl p-8 shadow-2xl w-full`;
+    } rounded-2xl shadow-2xl w-full min-h-[60vh] flex flex-col relative overflow-hidden`;
+
+    // Create header section with system status
+    const header = document.createElement("div");
+    header.className = `flex justify-between items-center p-4 border-b ${
+      prophecy.isCritical 
+        ? "border-red-500/30 bg-red-500/10" 
+        : "border-emerald-400/30 bg-emerald-400/10"
+    }`;
+
+    // System status indicator
+    const systemStatus = document.createElement("div");
+    systemStatus.className = "flex items-center space-x-3";
+    
+    // Primary status
+    const statusDot = document.createElement("div");
+    statusDot.className = `w-2 h-2 rounded-full ${
+      prophecy.isCritical ? "bg-red-400 animate-pulse" : "bg-emerald-400 status-pulse"
+    }`;
+    
+    const statusText = document.createElement("span");
+    statusText.className = `font-mono text-xs ${
+      prophecy.isCritical ? "text-red-400" : "text-emerald-400"
+    } uppercase tracking-wider`;
+    statusText.textContent = prophecy.isCritical ? "ALERT ACTIVE" : "SYSTEM ONLINE";
+    
+    // Secondary indicators
+    const indicators = document.createElement("div");
+    indicators.className = "flex space-x-1";
+    
+    const indicatorLabels = prophecy.isCritical 
+      ? ["WARN", "CRIT", "PRIO"] 
+      : ["CONN", "SYNC", "PROC"];
+    
+    indicatorLabels.forEach((label, i) => {
+      const indicator = document.createElement("div");
+      indicator.className = `px-1 py-0.5 text-[8px] font-mono border rounded ${
+        prophecy.isCritical 
+          ? "border-red-500/50 text-red-300 bg-red-500/10" 
+          : "border-emerald-500/50 text-emerald-300 bg-emerald-500/10"
+      }`;
+      indicator.textContent = label;
+      indicators.appendChild(indicator);
+    });
+    
+    systemStatus.appendChild(statusDot);
+    systemStatus.appendChild(statusText);
+    systemStatus.appendChild(indicators);
+
+    // Prophecy ID and timestamp
+    const metaInfo = document.createElement("div");
+    metaInfo.className = "flex flex-col items-end";
+    
+    const prophecyId = document.createElement("span");
+    prophecyId.className = `font-mono text-xs ${
+      prophecy.isCritical ? "text-red-300/70" : "text-emerald-300/70"
+    } uppercase`;
+    prophecyId.textContent = `ORACLE-${String(index + 1).padStart(4, '0')}`;
+    
+    const timestamp = document.createElement("span");
+    timestamp.className = `font-mono text-xs ${
+      prophecy.isCritical ? "text-red-300/50" : "text-emerald-300/50"
+    }`;
+    const now = new Date();
+    timestamp.textContent = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    
+    metaInfo.appendChild(prophecyId);
+    metaInfo.appendChild(timestamp);
+
+    header.appendChild(systemStatus);
+    header.appendChild(metaInfo);
+
+    // Main content area
+    const contentArea = document.createElement("div");
+    contentArea.className = "flex-1 flex items-center justify-center p-12 relative";
+
+    // Add corner indicators for sci-fi feel
+    const corners = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
+    corners.forEach(corner => {
+      const cornerIndicator = document.createElement("div");
+      cornerIndicator.className = `absolute w-4 h-4 border-2 ${
+        prophecy.isCritical ? "border-red-400" : "border-emerald-400"
+      } ${corner === 'top-left' ? 'top-4 left-4 border-r-0 border-b-0' : ''}${
+        corner === 'top-right' ? 'top-4 right-4 border-l-0 border-b-0' : ''
+      }${corner === 'bottom-left' ? 'bottom-4 left-4 border-r-0 border-t-0' : ''}${
+        corner === 'bottom-right' ? 'bottom-4 right-4 border-l-0 border-t-0' : ''
+      } opacity-60`;
+      contentArea.appendChild(cornerIndicator);
+    });
 
     const text = document.createElement("p");
-    text.className = `font-mono text-2xl md:text-3xl ${
+    text.className = `font-mono text-3xl md:text-4xl lg:text-5xl ${
       prophecy.isCritical ? "text-red-400" : "text-emerald-200"
-    } leading-relaxed text-center`;
+    } leading-relaxed text-center max-w-4xl z-10 relative`;
     text.textContent = prophecy.text;
 
-    innerBox.appendChild(text);
+    contentArea.appendChild(text);
+
+    // Footer with scanning line animation
+    const footer = document.createElement("div");
+    footer.className = `relative p-4 border-t ${
+      prophecy.isCritical 
+        ? "border-red-500/30 bg-red-500/5" 
+        : "border-emerald-400/30 bg-emerald-400/5"
+    }`;
+
+    const scanLine = document.createElement("div");
+    scanLine.className = `absolute top-0 left-0 w-full h-0.5 ${
+      prophecy.isCritical ? "bg-red-400" : "bg-emerald-400"
+    } opacity-60 scan-line`;
+
+    const footerContent = document.createElement("div");
+    footerContent.className = "flex justify-between items-center";
+
+    // Left side - Auth and processing info
+    const leftInfo = document.createElement("div");
+    leftInfo.className = "flex flex-col space-y-1";
+    
+    const authCode = document.createElement("span");
+    authCode.className = `font-mono text-xs ${
+      prophecy.isCritical ? "text-red-300/60" : "text-emerald-300/60"
+    } uppercase tracking-widest`;
+    authCode.textContent = `AUTH: ${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+    
+    const processingStatus = document.createElement("span");
+    processingStatus.className = `font-mono text-[10px] ${
+      prophecy.isCritical ? "text-red-300/40" : "text-emerald-300/40"
+    } uppercase`;
+    processingStatus.textContent = `NEURAL LINK: ${Math.floor(Math.random() * 100)}% | QUANTUM SYNC: ACTIVE`;
+    
+    leftInfo.appendChild(authCode);
+    leftInfo.appendChild(processingStatus);
+
+    // Right side - Classification and security level
+    const rightInfo = document.createElement("div");
+    rightInfo.className = "flex flex-col items-end space-y-1";
+    
+    const classificationLevel = document.createElement("span");
+    classificationLevel.className = `font-mono text-xs ${
+      prophecy.isCritical ? "text-red-400" : "text-emerald-400"
+    } uppercase tracking-wider`;
+    classificationLevel.textContent = prophecy.isCritical ? "PRIORITY ALPHA" : "CLASSIFIED";
+    
+    const securityLevel = document.createElement("span");
+    securityLevel.className = `font-mono text-[10px] ${
+      prophecy.isCritical ? "text-red-300/40" : "text-emerald-300/40"
+    } uppercase tracking-wide`;
+    securityLevel.textContent = `SEC-LVL: ${prophecy.isCritical ? "OMEGA" : "BETA"} | ENCRYPTION: AES-∞`;
+    
+    rightInfo.appendChild(classificationLevel);
+    rightInfo.appendChild(securityLevel);
+
+    footerContent.appendChild(leftInfo);
+    footerContent.appendChild(rightInfo);
+
+    footer.appendChild(scanLine);
+    footer.appendChild(footerContent);
+
+    // Assemble the complete card
+    innerBox.appendChild(header);
+    innerBox.appendChild(contentArea);
+    innerBox.appendChild(footer);
     prophecyBox.appendChild(innerBox);
     container.appendChild(prophecyBox);
 
@@ -1299,16 +1452,30 @@ class OracleApp {
     // Use passive event listener for better performance
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    // Separate wheel event for immediate responsiveness on desktop
+    // Enhanced wheel event for immediate responsiveness on desktop
     window.addEventListener("wheel", (e) => {
       if (!this.isInitialized) return;
       
       // Only handle wheel events on non-mobile devices
       if (!this.isMobileDevice()) {
-        this.lastKnownScrollPosition = window.scrollY;
-        this.scrollDirection = e.deltaY > 0 ? 1 : -1;
+        // Prevent default to control scroll behavior
+        e.preventDefault();
+        
+        const delta = e.deltaY;
+        const now = Date.now();
+        
+        // Throttle wheel events to prevent rapid scrolling
+        if (now - this.lastScrollTime < 100) return;
+        
+        if (Math.abs(delta) > 10) { // Threshold for intentional scroll
+          if (delta > 0) {
+            this.nextProphecy();
+          } else {
+            this.previousProphecy();
+          }
+        }
       }
-    }, { passive: true });
+    }, { passive: false }); // Not passive so we can preventDefault
   }
 
   isMobileDevice() {
@@ -1320,37 +1487,41 @@ class OracleApp {
   updateScrollEffects() {
     const scrollY = this.lastKnownScrollPosition;
     const windowHeight = window.innerHeight;
-    const currentProphecyIndex = Math.floor(scrollY / windowHeight);
-
+    
+    // More precise calculation for current prophecy index with snap behavior
+    const rawIndex = scrollY / windowHeight;
+    const currentProphecyIndex = Math.round(rawIndex); // Use round instead of floor for better snap detection
+    
     // Handle landing fade with pre-calculated threshold
     if (!this.landingFaded && scrollY > this.fadeThreshold) {
       this.fadeLandingSmooth();
     }
 
-    // Update prophecy display with mobile-friendly logic
+    // Update prophecy display with improved snap-aware logic
     if (currentProphecyIndex >= 0 && currentProphecyIndex !== this.currentIndex) {
-      // On mobile, be more conservative about index changes
-      if (this.isMobileDevice()) {
-        // Only change if we've scrolled significantly
-        const scrollProgress = (scrollY % windowHeight) / windowHeight;
-        if (scrollProgress > 0.3 && scrollProgress < 0.7) {
-          // We're in the middle of a prophecy, don't change index
-          return;
-        }
-      }
+      // Calculate scroll progress within the current viewport
+      const scrollProgress = rawIndex - Math.floor(rawIndex);
       
-      this.currentIndex = currentProphecyIndex;
-      this.showProphecy(this.currentIndex);
+      // On mobile, be more conservative but still allow snap transitions
+      if (this.isMobileDevice()) {
+        // Only change index if we're close to a snap point
+        if (scrollProgress < 0.2 || scrollProgress > 0.8) {
+          this.currentIndex = currentProphecyIndex;
+          this.showProphecy(this.currentIndex);
+        }
+      } else {
+        // On desktop, allow more immediate transitions
+        this.currentIndex = currentProphecyIndex;
+        this.showProphecy(this.currentIndex);
+      }
     }
 
-    // Optimized preloading - only when scrolling down
-    if (this.scrollDirection > 0) {
-      const scrollProgress = (scrollY % windowHeight) / windowHeight;
-      // More conservative preloading threshold for mobile
-      const preloadThreshold = this.isMobileDevice() ? 0.8 : 0.7;
-      if (scrollProgress > preloadThreshold) {
-        this.showProphecy(this.currentIndex + 1);
-      }
+    // Optimized preloading - always ensure next prophecy is ready
+    this.showProphecy(this.currentIndex + 1);
+    
+    // Also preload previous if we're not at the start
+    if (this.currentIndex > 0) {
+      this.showProphecy(this.currentIndex - 1);
     }
 
     // Update Three.js background
@@ -1407,7 +1578,7 @@ class OracleApp {
   }
 
   handleSwipe() {
-    const swipeThreshold = 80; // Increased threshold for mobile
+    const swipeThreshold = 60; // Reduced threshold for more responsive swipes
     const diff = this.touchStartY - this.touchEndY;
     const absDiff = Math.abs(diff);
 
@@ -1415,28 +1586,50 @@ class OracleApp {
     if (absDiff > swipeThreshold) {
       // Prevent multiple rapid swipes
       const now = Date.now();
-      if (now - this.lastSwipeTime < 500) return;
+      if (now - this.lastSwipeTime < 300) return; // Reduced to allow more responsive swipes
       this.lastSwipeTime = now;
 
       if (diff > 0) {
         // Swipe up - next prophecy
         this.nextProphecy();
+      } else {
+        // Swipe down - previous prophecy (if not at start)
+        this.previousProphecy();
       }
-      // Note: We don't handle swipe down for previous as it's infinite scroll forward
     }
+  }
+
+  previousProphecy() {
+    // Prevent going to negative indices
+    if (this.currentIndex <= 0) return;
+    
+    // Prevent rapid successive calls
+    const now = Date.now();
+    if (now - this.lastNextProphecyTime < 600) return;
+    this.lastNextProphecyTime = now;
+
+    this.currentIndex--;
+    this.showProphecy(this.currentIndex);
+
+    // Smooth scroll to previous prophecy
+    const targetY = this.currentIndex * window.innerHeight;
+    window.scrollTo({
+      top: targetY,
+      behavior: "smooth",
+    });
   }
 
   nextProphecy() {
     // Prevent rapid successive calls
     const now = Date.now();
-    if (now - this.lastNextProphecyTime < 800) return;
+    if (now - this.lastNextProphecyTime < 600) return; // Reduced for more responsiveness
     this.lastNextProphecyTime = now;
 
     this.currentIndex++;
     this.showProphecy(this.currentIndex);
 
-    // Smooth scroll to next prophecy
-    const targetY = (this.currentIndex + 1) * window.innerHeight;
+    // Smooth scroll to next prophecy with snap behavior
+    const targetY = this.currentIndex * window.innerHeight;
     window.scrollTo({
       top: targetY,
       behavior: "smooth",
