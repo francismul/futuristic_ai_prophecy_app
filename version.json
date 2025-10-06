@@ -1,0 +1,42 @@
+{
+  "version": "1.0.3",
+  "name": "Oracle Mode - AI Prophecy Generator",
+  "codename": "Cosmic Nexus",
+  "build": {
+    "date": "2025-10-06",
+    "environment": "production"
+  },
+  "features": {
+    "pwa": true,
+    "offline": true,
+    "notifications": true,
+    "backgroundSync": true,
+    "scrollSnap": true,
+    "sciFiInterface": true
+  },
+  "dependencies": {
+    "threejs": "r128",
+    "gsap": "3.12.2",
+    "tailwindcss": "latest"
+  },
+  "cache": {
+    "strategy": "cache-first",
+    "maxAge": 604800,
+    "autoCleanup": true
+  },
+  "compatibility": {
+    "minBrowsers": {
+      "chrome": "60",
+      "firefox": "55",
+      "safari": "11",
+      "edge": "79"
+    },
+    "features": [
+      "serviceWorker",
+      "webManifest",
+      "es6",
+      "fetch",
+      "promises"
+    ]
+  }
+}
