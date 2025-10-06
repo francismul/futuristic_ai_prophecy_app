@@ -326,7 +326,7 @@ class ThreeJSBackground {
       0x450a0a, // Dark red
       0x78350f, // Dark orange
     ];
-    
+
     // Fog gradient colors (lighter versions for depth)
     this.fogColors = [
       0x1e3a8a, // Light space blue
@@ -340,7 +340,7 @@ class ThreeJSBackground {
       0x991b1b, // Light red
       0xc2410c, // Light orange
     ];
-    
+
     this.currentColorIndex = 0;
     this.targetColor = new THREE.Color(this.backgroundColors[0]);
     this.currentColor = new THREE.Color(this.backgroundColors[0]);
@@ -442,19 +442,19 @@ class ThreeJSBackground {
         side: THREE.DoubleSide,
       });
       const nebula = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
-      
+
       nebula.position.set(
         (Math.random() - 0.5) * 40,
         (Math.random() - 0.5) * 40,
         -20 - Math.random() * 10
       );
-      
+
       nebula.rotation.z = Math.random() * Math.PI * 2;
       nebula.userData = {
         rotationSpeed: (Math.random() - 0.5) * 0.001,
         parallaxSpeed: 0.1,
       };
-      
+
       this.backgroundElements.push(nebula);
       this.scene.add(nebula);
     }
@@ -468,13 +468,13 @@ class ThreeJSBackground {
         opacity: 0.2,
       });
       const stream = new THREE.Mesh(streamGeometry, streamMaterial);
-      
+
       stream.position.set(
         (Math.random() - 0.5) * 50,
         (Math.random() - 0.5) * 50,
         -25 - Math.random() * 15
       );
-      
+
       stream.rotation.set(
         Math.random() * Math.PI,
         Math.random() * Math.PI,
@@ -500,7 +500,8 @@ class ThreeJSBackground {
     ];
 
     for (let i = 0; i < 16; i++) {
-      const geometry = glyphGeometries[Math.floor(Math.random() * glyphGeometries.length)];
+      const geometry =
+        glyphGeometries[Math.floor(Math.random() * glyphGeometries.length)];
       const material = new THREE.MeshBasicMaterial({
         color: Math.random() > 0.5 ? 0x10b981 : 0x06b6d4,
         transparent: true,
@@ -511,7 +512,7 @@ class ThreeJSBackground {
       const glyph = new THREE.Mesh(geometry, material);
       const distance = 5 + Math.random() * 8;
       const angle = (i / 16) * Math.PI * 2;
-      
+
       glyph.position.set(
         Math.cos(angle) * distance,
         (Math.random() - 0.5) * 10,
@@ -545,15 +546,21 @@ class ThreeJSBackground {
       positions[i3] = (Math.random() - 0.5) * 30;
       positions[i3 + 1] = (Math.random() - 0.5) * 30;
       positions[i3 + 2] = Math.random() * 8; // Close to camera
-      
+
       // Velocities toward the core
       velocities[i3] = (Math.random() - 0.5) * 0.02;
       velocities[i3 + 1] = (Math.random() - 0.5) * 0.02;
       velocities[i3 + 2] = -0.05 - Math.random() * 0.05; // Moving away/toward core
     }
 
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    particleGeometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+    particleGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(positions, 3)
+    );
+    particleGeometry.setAttribute(
+      "velocity",
+      new THREE.BufferAttribute(velocities, 3)
+    );
 
     const particleMaterial = new THREE.PointsMaterial({
       color: 0x10b981,
@@ -562,7 +569,10 @@ class ThreeJSBackground {
       opacity: 0.8,
     });
 
-    this.foregroundParticles = new THREE.Points(particleGeometry, particleMaterial);
+    this.foregroundParticles = new THREE.Points(
+      particleGeometry,
+      particleMaterial
+    );
     this.foregroundParticles.userData = { parallaxSpeed: 1.5 };
     this.scene.add(this.foregroundParticles);
   }
@@ -577,13 +587,16 @@ class ThreeJSBackground {
       const i3 = i * 3;
       const angle = Math.random() * Math.PI * 2;
       const radius = Math.random() * 15 + 2;
-      
+
       positions[i3] = Math.cos(angle) * radius;
       positions[i3 + 1] = Math.sin(angle) * radius;
       positions[i3 + 2] = -Math.random() * 30 - 5;
     }
 
-    tunnelGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    tunnelGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(positions, 3)
+    );
 
     const tunnelMaterial = new THREE.PointsMaterial({
       color: 0x34d399,
@@ -599,7 +612,11 @@ class ThreeJSBackground {
   createLayeredRings() {
     for (let i = 0; i < 6; i++) {
       const depth = -2 - i * 2; // Staggered depths
-      const ringGeometry = new THREE.RingGeometry(2 + i * 0.8, 2.2 + i * 0.8, 32);
+      const ringGeometry = new THREE.RingGeometry(
+        2 + i * 0.8,
+        2.2 + i * 0.8,
+        32
+      );
       const ringMaterial = new THREE.MeshBasicMaterial({
         color: i % 2 === 0 ? 0x10b981 : 0x06b6d4,
         transparent: true,
@@ -622,7 +639,10 @@ class ThreeJSBackground {
   createOccludingElements() {
     // Semi-transparent elements between camera and core
     for (let i = 0; i < 10; i++) {
-      const occluderGeometry = new THREE.PlaneGeometry(1 + Math.random() * 2, 1 + Math.random() * 2);
+      const occluderGeometry = new THREE.PlaneGeometry(
+        1 + Math.random() * 2,
+        1 + Math.random() * 2
+      );
       const occluderMaterial = new THREE.MeshBasicMaterial({
         color: 0x10b981,
         transparent: true,
@@ -630,13 +650,13 @@ class ThreeJSBackground {
         side: THREE.DoubleSide,
       });
       const occluder = new THREE.Mesh(occluderGeometry, occluderMaterial);
-      
+
       occluder.position.set(
         (Math.random() - 0.5) * 20,
         (Math.random() - 0.5) * 20,
         -1 - Math.random() * 8
       );
-      
+
       occluder.rotation.set(
         Math.random() * Math.PI,
         Math.random() * Math.PI,
@@ -659,14 +679,18 @@ class ThreeJSBackground {
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     });
 
-    window.addEventListener("scroll", () => {
-      const now = Date.now();
-      if (now - this.lastScrollUpdate > this.scrollUpdateThrottle) {
-        this.scrollY = window.scrollY;
-        this.updateBackgroundColor();
-        this.lastScrollUpdate = now;
-      }
-    }, { passive: true });
+    window.addEventListener(
+      "scroll",
+      () => {
+        const now = Date.now();
+        if (now - this.lastScrollUpdate > this.scrollUpdateThrottle) {
+          this.scrollY = window.scrollY;
+          this.updateBackgroundColor();
+          this.lastScrollUpdate = now;
+        }
+      },
+      { passive: true }
+    );
 
     window.addEventListener("resize", () => {
       this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -677,8 +701,10 @@ class ThreeJSBackground {
 
   updateBackgroundColor() {
     const scrollProgress = this.scrollY / (window.innerHeight * 2);
-    const colorIndex = Math.floor(scrollProgress % this.backgroundColors.length);
-    
+    const colorIndex = Math.floor(
+      scrollProgress % this.backgroundColors.length
+    );
+
     if (colorIndex !== this.currentColorIndex) {
       this.currentColorIndex = colorIndex;
       this.targetColor.setHex(this.backgroundColors[colorIndex]);
@@ -695,7 +721,7 @@ class ThreeJSBackground {
     this.currentColor.lerp(this.targetColor, 0.02);
     this.currentFogColor.lerp(this.targetFogColor, 0.02);
     this.renderer.setClearColor(this.currentColor);
-    
+
     // Dynamic breathing fog
     const fogBreath = Math.sin(time * 0.5) * this.fogBreathIntensity;
     this.scene.fog.near = this.baseFogNear + fogBreath;
@@ -704,7 +730,7 @@ class ThreeJSBackground {
 
     // Enhanced scroll-based effects
     const scrollIntensity = Math.min(this.scrollY / 1000, 3);
-    
+
     // Oracle Core - smaller, distant, subtle scaling
     const pulseScale = 1 + Math.sin(time * 1.5) * 0.05; // Reduced pulse
     this.oracleCore.scale.setScalar(pulseScale);
@@ -722,7 +748,7 @@ class ThreeJSBackground {
     // PARALLAX SYSTEM - Different speeds for each layer
     const mouseInfluence = {
       x: this.mouse.x * 0.1,
-      y: this.mouse.y * 0.1
+      y: this.mouse.y * 0.1,
     };
 
     // Background layer - slowest movement
@@ -731,9 +757,10 @@ class ThreeJSBackground {
       element.position.x += mouseInfluence.x * parallax * 0.1;
       element.position.y += mouseInfluence.y * parallax * 0.1;
       element.rotation.z += element.userData.rotationSpeed;
-      
+
       // Subtle opacity breathing for nebulas
-      if (index < 12) { // nebulas
+      if (index < 12) {
+        // nebulas
         element.material.opacity = 0.03 + Math.sin(time * 0.3 + index) * 0.01;
       }
     });
@@ -741,21 +768,27 @@ class ThreeJSBackground {
     // Midground glyphs - medium movement with orbiting
     this.glyphs.forEach((glyph, index) => {
       const parallax = glyph.userData.parallaxSpeed;
-      
+
       // Orbital movement
       glyph.userData.orbitAngle += glyph.userData.orbitSpeed * 0.01;
-      const orbitX = Math.cos(glyph.userData.orbitAngle) * glyph.userData.orbitRadius;
-      const orbitZ = Math.sin(glyph.userData.orbitAngle) * glyph.userData.orbitRadius * 0.3;
-      
+      const orbitX =
+        Math.cos(glyph.userData.orbitAngle) * glyph.userData.orbitRadius;
+      const orbitZ =
+        Math.sin(glyph.userData.orbitAngle) * glyph.userData.orbitRadius * 0.3;
+
       glyph.position.x = orbitX + mouseInfluence.x * parallax;
-      glyph.position.z = glyph.userData.originalPosition.z + orbitZ + mouseInfluence.y * parallax * 0.5;
-      glyph.position.y = glyph.userData.originalPosition.y + Math.sin(time * 0.3 + index) * 1.5;
+      glyph.position.z =
+        glyph.userData.originalPosition.z +
+        orbitZ +
+        mouseInfluence.y * parallax * 0.5;
+      glyph.position.y =
+        glyph.userData.originalPosition.y + Math.sin(time * 0.3 + index) * 1.5;
 
       // Rotation and pulsing
       glyph.rotation.x += glyph.userData.rotationSpeed;
       glyph.rotation.y += glyph.userData.rotationSpeed;
       glyph.rotation.z += glyph.userData.rotationSpeed * 0.5;
-      
+
       // Pulsating opacity
       const pulse = Math.sin(time * glyph.userData.pulseSpeed + index) * 0.2;
       glyph.material.opacity = 0.6 + pulse;
@@ -763,14 +796,16 @@ class ThreeJSBackground {
 
     // Foreground particles - fastest movement
     if (this.foregroundParticles) {
-      const positions = this.foregroundParticles.geometry.attributes.position.array;
-      const velocities = this.foregroundParticles.geometry.attributes.velocity.array;
-      
+      const positions =
+        this.foregroundParticles.geometry.attributes.position.array;
+      const velocities =
+        this.foregroundParticles.geometry.attributes.velocity.array;
+
       for (let i = 0; i < positions.length; i += 3) {
         positions[i] += velocities[i] + mouseInfluence.x * 1.5;
         positions[i + 1] += velocities[i + 1] + mouseInfluence.y * 1.5;
         positions[i + 2] += velocities[i + 2];
-        
+
         // Reset particles that move too far
         if (positions[i + 2] < -20) {
           positions[i] = (Math.random() - 0.5) * 30;
@@ -779,19 +814,24 @@ class ThreeJSBackground {
         }
       }
       this.foregroundParticles.geometry.attributes.position.needsUpdate = true;
-      
+
       // Color shifting
       const particleHue = (time * 0.1) % 1;
-      this.foregroundParticles.material.color.setHSL(particleHue * 0.3 + 0.5, 0.8, 0.6);
+      this.foregroundParticles.material.color.setHSL(
+        particleHue * 0.3 + 0.5,
+        0.8,
+        0.6
+      );
     }
 
     // Tunnel particles - starfield effect
     if (this.tunnelParticles) {
-      const tunnelPositions = this.tunnelParticles.geometry.attributes.position.array;
-      
+      const tunnelPositions =
+        this.tunnelParticles.geometry.attributes.position.array;
+
       for (let i = 0; i < tunnelPositions.length; i += 3) {
         tunnelPositions[i + 2] += 0.1 + scrollIntensity * 0.05; // Move toward camera
-        
+
         // Reset particles
         if (tunnelPositions[i + 2] > 5) {
           tunnelPositions[i + 2] = -35;
@@ -809,15 +849,16 @@ class ThreeJSBackground {
       const parallax = ring.userData.parallaxSpeed;
       ring.rotation.z += ring.userData.speed + scrollIntensity * 0.01;
       ring.rotation.x = Math.sin(time * 0.5 + index) * 0.2;
-      
+
       // Parallax movement
       ring.position.x = mouseInfluence.x * parallax;
       ring.position.y = mouseInfluence.y * parallax;
-      
+
       // Depth-based pulsing
       const pulse = Math.sin(time * 2 + index) * 0.1 + 1;
       ring.scale.setScalar(pulse);
-      ring.material.opacity = ring.userData.originalOpacity + Math.sin(time + index) * 0.05;
+      ring.material.opacity =
+        ring.userData.originalOpacity + Math.sin(time + index) * 0.05;
     });
 
     // Occluding elements
@@ -826,11 +867,11 @@ class ThreeJSBackground {
       occluder.rotation.x += occluder.userData.rotationSpeed;
       occluder.rotation.y += occluder.userData.rotationSpeed * 0.7;
       occluder.rotation.z += occluder.userData.rotationSpeed * 0.3;
-      
+
       // Parallax movement
       occluder.position.x += mouseInfluence.x * parallax;
       occluder.position.y += mouseInfluence.y * parallax;
-      
+
       // Breathing opacity
       occluder.material.opacity = 0.05 + Math.sin(time * 0.5 + index) * 0.02;
     });
@@ -853,7 +894,7 @@ class OracleLoader {
       "CONNECTING TO THE NETWORK...",
       "AWAKENING DIGITAL CONSCIOUSNESS...",
       "SYNCHRONIZING TEMPORAL STREAMS...",
-      "ORACLE ONLINE - PROPHECIES READY"
+      "ORACLE ONLINE - PROPHECIES READY",
     ];
     this.currentStep = 0;
     this.typewriterIndex = 0;
@@ -861,14 +902,14 @@ class OracleLoader {
     this.loadingProgress = 0;
     this.startTime = Date.now();
     this.minLoadTime = 1500; // 1.5 seconds minimum
-    
+
     this.createLoaderHTML();
     this.startLoader();
   }
 
   createLoaderHTML() {
-    const loaderContainer = document.createElement('div');
-    loaderContainer.id = 'oracle-loader';
+    const loaderContainer = document.createElement("div");
+    loaderContainer.id = "oracle-loader";
     loaderContainer.innerHTML = `
       <div class="fixed inset-0 bg-black z-50 flex items-center justify-center">
         <div class="text-center space-y-8 max-w-2xl mx-auto px-4">
@@ -914,7 +955,7 @@ class OracleLoader {
     `;
 
     // Add styles
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = `
       @keyframes spin-slow {
         from { transform: rotate(0deg); }
@@ -974,25 +1015,25 @@ class OracleLoader {
         51%, 100% { opacity: 0; }
       }
     `;
-    
+
     document.head.appendChild(style);
     document.body.appendChild(loaderContainer);
   }
 
   async startLoader() {
-    const textElement = document.getElementById('loader-text');
-    const progressBar = document.getElementById('progress-bar');
-    const progressPercentage = document.getElementById('progress-percentage');
+    const textElement = document.getElementById("loader-text");
+    const progressBar = document.getElementById("progress-bar");
+    const progressPercentage = document.getElementById("progress-percentage");
 
     // Start typing animation
     for (let step = 0; step < this.loadingSteps.length; step++) {
       await this.typeText(textElement, this.loadingSteps[step]);
-      
+
       // Update progress
       const progress = ((step + 1) / this.loadingSteps.length) * 100;
       progressBar.style.width = `${progress}%`;
       progressPercentage.textContent = `${Math.round(progress)}%`;
-      
+
       // Wait between steps
       if (step < this.loadingSteps.length - 1) {
         await this.delay(200);
@@ -1010,20 +1051,22 @@ class OracleLoader {
   }
 
   async typeText(element, text) {
-    element.textContent = '';
-    
+    element.textContent = "";
+
     for (let i = 0; i < text.length; i++) {
       element.textContent = text.substring(0, i + 1);
-      
+
       // Add some randomness to typing speed for robotic feel
       const delay = Math.random() * 30 + 20;
       await this.delay(delay);
-      
+
       // Occasional glitch effect
       if (Math.random() < 0.1) {
         const originalChar = text[i];
-        const glitchChars = ['▓', '█', '░', '▒'];
-        element.textContent = text.substring(0, i) + glitchChars[Math.floor(Math.random() * glitchChars.length)];
+        const glitchChars = ["▓", "█", "░", "▒"];
+        element.textContent =
+          text.substring(0, i) +
+          glitchChars[Math.floor(Math.random() * glitchChars.length)];
         await this.delay(50);
         element.textContent = text.substring(0, i + 1);
       }
@@ -1031,15 +1074,15 @@ class OracleLoader {
   }
 
   delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   async completeLoading() {
-    const loader = document.getElementById('oracle-loader');
-    
+    const loader = document.getElementById("oracle-loader");
+
     // Fade out effect
     if (gsap) {
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         gsap.to(loader, {
           opacity: 0,
           duration: 0.8,
@@ -1047,11 +1090,11 @@ class OracleLoader {
           onComplete: () => {
             loader.remove();
             resolve();
-          }
+          },
         });
       });
     } else {
-      loader.style.opacity = '0';
+      loader.style.opacity = "0";
       setTimeout(() => loader.remove(), 800);
     }
   }
@@ -1092,13 +1135,13 @@ class OracleApp {
   async init() {
     // Start the loader first
     this.loader = new OracleLoader();
-    
+
     // Initialize heavy tasks during loader
     await Promise.all([
       this.initializeThreeJS(),
       this.preloadInitialContent(),
       this.setupEventListeners(),
-      this.delay(1500) // Ensure minimum loader time
+      this.delay(1500), // Ensure minimum loader time
     ]);
 
     // Mark as initialized
@@ -1119,13 +1162,13 @@ class OracleApp {
     // Setup optimized scroll listener
     this.setupOptimizedScrollListener();
     this.setupTouchListeners();
-    
+
     // Setup landing fade detection
     this.setupLandingFadeDetection();
   }
 
   delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   async preloadInitialContent() {
@@ -1176,18 +1219,18 @@ class OracleApp {
 
   fadeLandingSmooth() {
     if (this.landingFaded) return;
-    
+
     this.landingFaded = true;
     const landing = document.getElementById("landing");
-    
+
     if (landing && gsap) {
-      gsap.to(landing, { 
-        opacity: 0, 
-        duration: 0.8, 
+      gsap.to(landing, {
+        opacity: 0,
+        duration: 0.8,
         ease: "power2.out",
         onComplete: () => {
           landing.style.pointerEvents = "none";
-        }
+        },
       });
     }
   }
@@ -1200,7 +1243,8 @@ class OracleApp {
 
   createProphecyElement(prophecy, index) {
     const container = document.createElement("div");
-    container.className = "h-screen flex items-center justify-center px-4 prophecy-snap-container";
+    container.className =
+      "h-screen flex items-center justify-center px-4 prophecy-snap-container";
     container.dataset.index = index;
 
     const prophecyBox = document.createElement("div");
@@ -1218,46 +1262,50 @@ class OracleApp {
     // Create header section with system status
     const header = document.createElement("div");
     header.className = `flex justify-between items-center p-4 border-b ${
-      prophecy.isCritical 
-        ? "border-red-500/30 bg-red-500/10" 
+      prophecy.isCritical
+        ? "border-red-500/30 bg-red-500/10"
         : "border-emerald-400/30 bg-emerald-400/10"
     }`;
 
     // System status indicator
     const systemStatus = document.createElement("div");
     systemStatus.className = "flex items-center space-x-3";
-    
+
     // Primary status
     const statusDot = document.createElement("div");
     statusDot.className = `w-2 h-2 rounded-full ${
-      prophecy.isCritical ? "bg-red-400 animate-pulse" : "bg-emerald-400 status-pulse"
+      prophecy.isCritical
+        ? "bg-red-400 animate-pulse"
+        : "bg-emerald-400 status-pulse"
     }`;
-    
+
     const statusText = document.createElement("span");
     statusText.className = `font-mono text-xs ${
       prophecy.isCritical ? "text-red-400" : "text-emerald-400"
     } uppercase tracking-wider`;
-    statusText.textContent = prophecy.isCritical ? "ALERT ACTIVE" : "SYSTEM ONLINE";
-    
+    statusText.textContent = prophecy.isCritical
+      ? "ALERT ACTIVE"
+      : "SYSTEM ONLINE";
+
     // Secondary indicators
     const indicators = document.createElement("div");
     indicators.className = "flex space-x-1";
-    
-    const indicatorLabels = prophecy.isCritical 
-      ? ["WARN", "CRIT", "PRIO"] 
+
+    const indicatorLabels = prophecy.isCritical
+      ? ["WARN", "CRIT", "PRIO"]
       : ["CONN", "SYNC", "PROC"];
-    
+
     indicatorLabels.forEach((label, i) => {
       const indicator = document.createElement("div");
       indicator.className = `px-1 py-0.5 text-[8px] font-mono border rounded ${
-        prophecy.isCritical 
-          ? "border-red-500/50 text-red-300 bg-red-500/10" 
+        prophecy.isCritical
+          ? "border-red-500/50 text-red-300 bg-red-500/10"
           : "border-emerald-500/50 text-emerald-300 bg-emerald-500/10"
       }`;
       indicator.textContent = label;
       indicators.appendChild(indicator);
     });
-    
+
     systemStatus.appendChild(statusDot);
     systemStatus.appendChild(statusText);
     systemStatus.appendChild(indicators);
@@ -1265,20 +1313,24 @@ class OracleApp {
     // Prophecy ID and timestamp
     const metaInfo = document.createElement("div");
     metaInfo.className = "flex flex-col items-end";
-    
+
     const prophecyId = document.createElement("span");
     prophecyId.className = `font-mono text-xs ${
       prophecy.isCritical ? "text-red-300/70" : "text-emerald-300/70"
     } uppercase`;
-    prophecyId.textContent = `ORACLE-${String(index + 1).padStart(4, '0')}`;
-    
+    prophecyId.textContent = `ORACLE-${String(index + 1).padStart(4, "0")}`;
+
     const timestamp = document.createElement("span");
     timestamp.className = `font-mono text-xs ${
       prophecy.isCritical ? "text-red-300/50" : "text-emerald-300/50"
     }`;
     const now = new Date();
-    timestamp.textContent = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    
+    timestamp.textContent = `${now.getFullYear()}.${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}.${String(now.getDate()).padStart(2, "0")} ${String(
+      now.getHours()
+    ).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
     metaInfo.appendChild(prophecyId);
     metaInfo.appendChild(timestamp);
 
@@ -1287,18 +1339,23 @@ class OracleApp {
 
     // Main content area
     const contentArea = document.createElement("div");
-    contentArea.className = "flex-1 flex items-center justify-center p-12 relative";
+    contentArea.className =
+      "flex-1 flex items-center justify-center p-12 relative";
 
     // Add corner indicators for sci-fi feel
-    const corners = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
-    corners.forEach(corner => {
+    const corners = ["top-left", "top-right", "bottom-left", "bottom-right"];
+    corners.forEach((corner) => {
       const cornerIndicator = document.createElement("div");
       cornerIndicator.className = `absolute w-4 h-4 border-2 ${
         prophecy.isCritical ? "border-red-400" : "border-emerald-400"
-      } ${corner === 'top-left' ? 'top-4 left-4 border-r-0 border-b-0' : ''}${
-        corner === 'top-right' ? 'top-4 right-4 border-l-0 border-b-0' : ''
-      }${corner === 'bottom-left' ? 'bottom-4 left-4 border-r-0 border-t-0' : ''}${
-        corner === 'bottom-right' ? 'bottom-4 right-4 border-l-0 border-t-0' : ''
+      } ${corner === "top-left" ? "top-4 left-4 border-r-0 border-b-0" : ""}${
+        corner === "top-right" ? "top-4 right-4 border-l-0 border-b-0" : ""
+      }${
+        corner === "bottom-left" ? "bottom-4 left-4 border-r-0 border-t-0" : ""
+      }${
+        corner === "bottom-right"
+          ? "bottom-4 right-4 border-l-0 border-t-0"
+          : ""
       } opacity-60`;
       contentArea.appendChild(cornerIndicator);
     });
@@ -1314,8 +1371,8 @@ class OracleApp {
     // Footer with scanning line animation
     const footer = document.createElement("div");
     footer.className = `relative p-4 border-t ${
-      prophecy.isCritical 
-        ? "border-red-500/30 bg-red-500/5" 
+      prophecy.isCritical
+        ? "border-red-500/30 bg-red-500/5"
         : "border-emerald-400/30 bg-emerald-400/5"
     }`;
 
@@ -1330,38 +1387,47 @@ class OracleApp {
     // Left side - Auth and processing info
     const leftInfo = document.createElement("div");
     leftInfo.className = "flex flex-col space-y-1";
-    
+
     const authCode = document.createElement("span");
     authCode.className = `font-mono text-xs ${
       prophecy.isCritical ? "text-red-300/60" : "text-emerald-300/60"
     } uppercase tracking-widest`;
-    authCode.textContent = `AUTH: ${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
-    
+    authCode.textContent = `AUTH: ${Math.random()
+      .toString(36)
+      .substring(2, 10)
+      .toUpperCase()}`;
+
     const processingStatus = document.createElement("span");
     processingStatus.className = `font-mono text-[10px] ${
       prophecy.isCritical ? "text-red-300/40" : "text-emerald-300/40"
     } uppercase`;
-    processingStatus.textContent = `NEURAL LINK: ${Math.floor(Math.random() * 100)}% | QUANTUM SYNC: ACTIVE`;
-    
+    processingStatus.textContent = `NEURAL LINK: ${Math.floor(
+      Math.random() * 100
+    )}% | QUANTUM SYNC: ACTIVE`;
+
     leftInfo.appendChild(authCode);
     leftInfo.appendChild(processingStatus);
 
     // Right side - Classification and security level
     const rightInfo = document.createElement("div");
     rightInfo.className = "flex flex-col items-end space-y-1";
-    
+
     const classificationLevel = document.createElement("span");
     classificationLevel.className = `font-mono text-xs ${
       prophecy.isCritical ? "text-red-400" : "text-emerald-400"
     } uppercase tracking-wider`;
-    classificationLevel.textContent = prophecy.isCritical ? "PRIORITY ALPHA" : "CLASSIFIED";
-    
+    classificationLevel.textContent = prophecy.isCritical
+      ? "PRIORITY ALPHA"
+      : "CLASSIFIED";
+
     const securityLevel = document.createElement("span");
     securityLevel.className = `font-mono text-[10px] ${
       prophecy.isCritical ? "text-red-300/40" : "text-emerald-300/40"
     } uppercase tracking-wide`;
-    securityLevel.textContent = `SEC-LVL: ${prophecy.isCritical ? "OMEGA" : "BETA"} | ENCRYPTION: AES-∞`;
-    
+    securityLevel.textContent = `SEC-LVL: ${
+      prophecy.isCritical ? "OMEGA" : "BETA"
+    } | ENCRYPTION: AES-∞`;
+
     rightInfo.appendChild(classificationLevel);
     rightInfo.appendChild(securityLevel);
 
@@ -1392,12 +1458,15 @@ class OracleApp {
     if (!existingProphecy) {
       // Check cache first
       let prophecyElement = this.prophecyElementCache.get(index);
-      
+
       if (!prophecyElement) {
         // Create if not cached
-        prophecyElement = this.createProphecyElement(this.prophecies[index], index);
+        prophecyElement = this.createProphecyElement(
+          this.prophecies[index],
+          index
+        );
       }
-      
+
       container.appendChild(prophecyElement);
 
       // Animate in with optimized animation
@@ -1423,8 +1492,14 @@ class OracleApp {
       window.requestIdleCallback(() => {
         for (let i = 1; i <= 2; i++) {
           const nextIndex = currentIndex + i;
-          if (!this.prophecyElementCache.has(nextIndex) && this.prophecies[nextIndex]) {
-            const element = this.createProphecyElement(this.prophecies[nextIndex], nextIndex);
+          if (
+            !this.prophecyElementCache.has(nextIndex) &&
+            this.prophecies[nextIndex]
+          ) {
+            const element = this.createProphecyElement(
+              this.prophecies[nextIndex],
+              nextIndex
+            );
             this.prophecyElementCache.set(nextIndex, element);
           }
         }
@@ -1436,7 +1511,8 @@ class OracleApp {
     // Optimized scroll handler with throttling and direction detection
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      this.scrollDirection = currentScrollY > this.lastKnownScrollPosition ? 1 : -1;
+      this.scrollDirection =
+        currentScrollY > this.lastKnownScrollPosition ? 1 : -1;
       this.lastKnownScrollPosition = currentScrollY;
       this.lastScrollTime = Date.now();
 
@@ -1453,55 +1529,67 @@ class OracleApp {
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     // Enhanced wheel event for immediate responsiveness on desktop
-    window.addEventListener("wheel", (e) => {
-      if (!this.isInitialized) return;
-      
-      // Only handle wheel events on non-mobile devices
-      if (!this.isMobileDevice()) {
-        // Prevent default to control scroll behavior
-        e.preventDefault();
-        
-        const delta = e.deltaY;
-        const now = Date.now();
-        
-        // Throttle wheel events to prevent rapid scrolling
-        if (now - this.lastScrollTime < 100) return;
-        
-        if (Math.abs(delta) > 10) { // Threshold for intentional scroll
-          if (delta > 0) {
-            this.nextProphecy();
-          } else {
-            this.previousProphecy();
+    window.addEventListener(
+      "wheel",
+      (e) => {
+        if (!this.isInitialized) return;
+
+        // Only handle wheel events on non-mobile devices
+        if (!this.isMobileDevice()) {
+          // Prevent default to control scroll behavior
+          e.preventDefault();
+
+          const delta = e.deltaY;
+          const now = Date.now();
+
+          // Throttle wheel events to prevent rapid scrolling
+          if (now - this.lastScrollTime < 100) return;
+
+          if (Math.abs(delta) > 10) {
+            // Threshold for intentional scroll
+            if (delta > 0) {
+              this.nextProphecy();
+            } else {
+              this.previousProphecy();
+            }
           }
         }
-      }
-    }, { passive: false }); // Not passive so we can preventDefault
+      },
+      { passive: false }
+    ); // Not passive so we can preventDefault
   }
 
   isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-           ('ontouchstart' in window) ||
-           (navigator.maxTouchPoints > 0);
+    return (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      ) ||
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0
+    );
   }
 
   updateScrollEffects() {
     const scrollY = this.lastKnownScrollPosition;
     const windowHeight = window.innerHeight;
-    
+
     // More precise calculation for current prophecy index with snap behavior
     const rawIndex = scrollY / windowHeight;
     const currentProphecyIndex = Math.round(rawIndex); // Use round instead of floor for better snap detection
-    
+
     // Handle landing fade with pre-calculated threshold
     if (!this.landingFaded && scrollY > this.fadeThreshold) {
       this.fadeLandingSmooth();
     }
 
     // Update prophecy display with improved snap-aware logic
-    if (currentProphecyIndex >= 0 && currentProphecyIndex !== this.currentIndex) {
+    if (
+      currentProphecyIndex >= 0 &&
+      currentProphecyIndex !== this.currentIndex
+    ) {
       // Calculate scroll progress within the current viewport
       const scrollProgress = rawIndex - Math.floor(rawIndex);
-      
+
       // On mobile, be more conservative but still allow snap transitions
       if (this.isMobileDevice()) {
         // Only change index if we're close to a snap point
@@ -1518,7 +1606,7 @@ class OracleApp {
 
     // Optimized preloading - always ensure next prophecy is ready
     this.showProphecy(this.currentIndex + 1);
-    
+
     // Also preload previous if we're not at the start
     if (this.currentIndex > 0) {
       this.showProphecy(this.currentIndex - 1);
@@ -1562,15 +1650,15 @@ class OracleApp {
       "touchend",
       (e) => {
         if (!isHandlingTouch) return;
-        
+
         this.touchEndY = e.changedTouches[0].clientY;
         const touchDuration = Date.now() - this.touchStartTime;
-        
+
         // Only handle quick swipes, let long touches be handled by scroll
         if (touchDuration < 300) {
           this.handleSwipe();
         }
-        
+
         isHandlingTouch = false;
       },
       { passive: true }
@@ -1602,7 +1690,7 @@ class OracleApp {
   previousProphecy() {
     // Prevent going to negative indices
     if (this.currentIndex <= 0) return;
-    
+
     // Prevent rapid successive calls
     const now = Date.now();
     if (now - this.lastNextProphecyTime < 600) return;
@@ -1639,7 +1727,7 @@ class OracleApp {
   checkScroll() {
     // Simplified check scroll for initial load and fallback
     if (!this.isInitialized) return;
-    
+
     this.updateScrollEffects();
   }
 }

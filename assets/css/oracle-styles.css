@@ -88,11 +88,6 @@ html {
   }
 }
 
-/* Critical pulse animation with contained shadows */
-.critical-pulse {
-  animation: criticalPulse 2s ease-in-out infinite;
-}
-
 /* Sci-Fi scanning line animation */
 .scan-line {
   animation: scanLine 3s ease-in-out infinite;
