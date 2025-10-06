@@ -1,0 +1,80 @@
+{
+  "name": "oracle-mode-ai-prophecy-generator",
+  "version": "1.0.3",
+  "description": "A futuristic AI prophecy generator PWA with immersive 3D backgrounds",
+  "main": "index.html",
+  "scripts": {
+    "start": "python server.py",
+    "serve": "python simple_server.py",
+    "dev": "python server.py --port 3000",
+    "build": "echo 'Static PWA - no build required'",
+    "test": "echo 'No tests specified'",
+    "version-bump": "npm version patch && git add . && git commit -m 'Version bump'",
+    "deploy": "echo 'Deploy to your preferred hosting service'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/francismul/futuristic_ai_prophecy_app.git"
+  },
+  "keywords": [
+    "pwa",
+    "prophecy",
+    "ai",
+    "generator",
+    "mystical",
+    "futuristic",
+    "three.js",
+    "gsap",
+    "offline",
+    "mobile",
+    "progressive-web-app",
+    "service-worker",
+    "entertainment"
+  ],
+  "author": "francismul",
+  "license": "MIT",
+  "homepage": "https://github.com/francismul/futuristic_ai_prophecy_app#readme",
+  "bugs": {
+    "url": "https://github.com/francismul/futuristic_ai_prophecy_app/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "python": ">=3.7.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "pwa": {
+    "name": "Oracle Mode",
+    "shortName": "Oracle Mode",
+    "description": "AI Prophecy Generator",
+    "startUrl": "./",
+    "display": "standalone",
+    "backgroundColor": "#000000",
+    "themeColor": "#10b981",
+    "offline": true,
+    "serviceWorker": true
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "files": [
+    "index.html",
+    "manifest.json",
+    "sw.js",
+    "version.json",
+    "assets/**",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "config": {
+    "version": "1.0.3",
+    "codename": "Cosmic Nexus",
+    "build": {
+      "environment": "production",
+      "target": "es2015"
+    }
+  }
+}
