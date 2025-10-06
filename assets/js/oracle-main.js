@@ -1738,6 +1738,9 @@ class VersionManager {
     this.currentVersion = "1.0.3";
     this.versionCheckInterval = 30 * 60 * 1000; // 30 minutes
     this.updateAvailable = false;
+    this.updateNotificationShown = false;
+    this.notificationCooldown = 10 * 60 * 1000; // 10 minutes cooldown between notifications
+    this.lastNotificationTime = 0;
     this.init();
   }
 
@@ -1801,8 +1804,15 @@ class VersionManager {
   }
 
   showUpdateNotification(newVersion = null) {
-    if (this.updateNotificationShown) return;
+    // Check if enough time has passed since last notification
+    const now = Date.now();
+    if (this.updateNotificationShown && (now - this.lastNotificationTime) < this.notificationCooldown) {
+      console.log('⏰ Update notification on cooldown, skipping...');
+      return;
+    }
+    
     this.updateNotificationShown = true;
+    this.lastNotificationTime = now;
 
     const notification = document.createElement('div');
     notification.className = 'fixed top-4 right-4 bg-emerald-600 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm';
@@ -1839,17 +1849,28 @@ class VersionManager {
 
     notification.querySelector('.dismiss-btn').addEventListener('click', () => {
       notification.remove();
+      // Reset notification flag after dismiss to allow future notifications
+      setTimeout(() => {
+        this.resetNotificationFlag();
+      }, 60000); // Reset after 1 minute
     });
 
     // Auto-dismiss after 10 seconds
     setTimeout(() => {
       if (notification.parentNode) {
         notification.remove();
+        // Reset notification flag after auto-dismiss
+        setTimeout(() => {
+          this.resetNotificationFlag();
+        }, 60000); // Reset after 1 minute
       }
     }, 10000);
   }
 
   async performUpdate() {
+    // Reset notification flag since we're applying the update
+    this.resetNotificationFlag();
+    
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
       // Tell the service worker to skip waiting
       navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
@@ -1874,10 +1895,16 @@ class VersionManager {
     }, this.versionCheckInterval);
   }
 
+  resetNotificationFlag() {
+    this.updateNotificationShown = false;
+    console.log('🔄 Notification flag reset - future updates can be shown');
+  }
+
   getVersionInfo() {
     return {
       version: this.currentVersion,
       updateAvailable: this.updateAvailable,
+      notificationCooldownActive: (Date.now() - this.lastNotificationTime) < this.notificationCooldown,
       timestamp: new Date().toISOString()
     };
   }

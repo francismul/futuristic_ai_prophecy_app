@@ -8,9 +8,10 @@ const BUILD_TIMESTAMP = Date.now();
 const CACHE_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 
 // Environment detection
-const isLocalhost = self.location.hostname === "localhost" || 
-                   self.location.hostname === "127.0.0.1" ||
-                   self.location.hostname === "0.0.0.0";
+const isLocalhost =
+  self.location.hostname === "localhost" ||
+  self.location.hostname === "127.0.0.1" ||
+  self.location.hostname === "0.0.0.0";
 
 const isProduction = !isLocalhost;
 
@@ -38,7 +39,7 @@ const criticalResources = [
   `${baseUrl}index.html`,
   `${baseUrl}assets/css/oracle-styles.css`,
   `${baseUrl}assets/js/oracle-main.js`,
-  `${baseUrl}manifest.json`
+  `${baseUrl}manifest.json`,
 ];
 
 // Version check and update notification
@@ -48,21 +49,23 @@ async function checkForUpdates() {
     if (response.ok) {
       const versionData = await response.json();
       if (versionData.version !== APP_VERSION) {
-        console.log(`🔄 New version available: ${versionData.version} (current: ${APP_VERSION})`);
+        console.log(
+          `🔄 New version available: ${versionData.version} (current: ${APP_VERSION})`
+        );
         // Notify clients about update
         const clients = await self.clients.matchAll();
-        clients.forEach(client => {
+        clients.forEach((client) => {
           client.postMessage({
-            type: 'NEW_VERSION_AVAILABLE',
+            type: "NEW_VERSION_AVAILABLE",
             version: versionData.version,
-            currentVersion: APP_VERSION
+            currentVersion: APP_VERSION,
           });
         });
         return true;
       }
     }
   } catch (error) {
-    console.warn('⚠️ Version check failed:', error);
+    console.warn("⚠️ Version check failed:", error);
   }
   return false;
 }
@@ -70,19 +73,19 @@ async function checkForUpdates() {
 // Enhanced cache cleanup - removes ALL old versions
 async function cleanupOldCaches() {
   const cacheNames = await caches.keys();
-  const oldCaches = cacheNames.filter(name => 
-    name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME
+  const oldCaches = cacheNames.filter(
+    (name) => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME
   );
-  
-  const deletePromises = oldCaches.map(cacheName => {
+
+  const deletePromises = oldCaches.map((cacheName) => {
     console.log(`🗑️ Deleting old cache: ${cacheName}`);
     return caches.delete(cacheName);
   });
-  
+
   if (deletePromises.length > 0) {
     console.log(`🧹 Cleaned up ${deletePromises.length} old cache(s)`);
   }
-  
+
   return Promise.all(deletePromises);
 }
 
@@ -91,15 +94,15 @@ async function isCacheExpired() {
   try {
     const cache = await caches.open(CACHE_NAME);
     const cachedResponse = await cache.match(`${baseUrl}version.json`);
-    
+
     if (!cachedResponse) return true;
-    
-    const cacheDate = new Date(cachedResponse.headers.get('date'));
+
+    const cacheDate = new Date(cachedResponse.headers.get("date"));
     const now = new Date();
-    
-    return (now.getTime() - cacheDate.getTime()) > CACHE_EXPIRY;
+
+    return now.getTime() - cacheDate.getTime() > CACHE_EXPIRY;
   } catch (error) {
-    console.warn('⚠️ Cache expiry check failed:', error);
+    console.warn("⚠️ Cache expiry check failed:", error);
     return true;
   }
 }
@@ -107,19 +110,21 @@ async function isCacheExpired() {
 // Intelligent caching strategy
 async function cacheResources() {
   const cache = await caches.open(CACHE_NAME);
-  
+
   // Cache critical resources first
   try {
     await cache.addAll(criticalResources);
-    console.log('✅ Critical resources cached successfully');
+    console.log("✅ Critical resources cached successfully");
   } catch (error) {
-    console.error('❌ Failed to cache critical resources:', error);
+    console.error("❌ Failed to cache critical resources:", error);
     throw error;
   }
-  
+
   // Cache remaining resources with error handling
-  const remainingResources = urlsToCache.filter(url => !criticalResources.includes(url));
-  
+  const remainingResources = urlsToCache.filter(
+    (url) => !criticalResources.includes(url)
+  );
+
   for (const url of remainingResources) {
     try {
       await cache.add(url);
@@ -129,23 +134,26 @@ async function cacheResources() {
       // Continue with other resources
     }
   }
-  
+
   // Cache version metadata
-  const versionResponse = new Response(JSON.stringify({
-    version: APP_VERSION,
-    timestamp: BUILD_TIMESTAMP,
-    cached: new Date().toISOString()
-  }), {
-    headers: { 'Content-Type': 'application/json' }
-  });
-  
+  const versionResponse = new Response(
+    JSON.stringify({
+      version: APP_VERSION,
+      timestamp: BUILD_TIMESTAMP,
+      cached: new Date().toISOString(),
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+
   await cache.put(`${baseUrl}sw-version.json`, versionResponse);
 }
 
 // Install event - Enhanced caching with version management
 self.addEventListener("install", (event) => {
   console.log(`🚀 Installing Oracle Mode Service Worker v${APP_VERSION}`);
-  
+
   event.waitUntil(
     (async () => {
       try {
@@ -154,7 +162,7 @@ self.addEventListener("install", (event) => {
         // Skip waiting to activate immediately
         self.skipWaiting();
       } catch (error) {
-        console.error('❌ Installation failed:', error);
+        console.error("❌ Installation failed:", error);
         throw error;
       }
     })()
@@ -164,32 +172,31 @@ self.addEventListener("install", (event) => {
 // Activate event - Enhanced cleanup and client claiming
 self.addEventListener("activate", (event) => {
   console.log(`🔄 Activating Oracle Mode Service Worker v${APP_VERSION}`);
-  
+
   event.waitUntil(
     (async () => {
       try {
         // Clean up old caches
         await cleanupOldCaches();
-        
+
         // Claim all clients immediately
         await self.clients.claim();
-        
+
         // Check for updates
         await checkForUpdates();
-        
+
         console.log(`✅ Oracle Mode v${APP_VERSION} activated successfully`);
-        
+
         // Notify clients of successful activation
         const clients = await self.clients.matchAll();
-        clients.forEach(client => {
+        clients.forEach((client) => {
           client.postMessage({
-            type: 'SW_ACTIVATED',
-            version: APP_VERSION
+            type: "SW_ACTIVATED",
+            version: APP_VERSION,
           });
         });
-        
       } catch (error) {
-        console.error('❌ Activation failed:', error);
+        console.error("❌ Activation failed:", error);
       }
     })()
   );
@@ -198,20 +205,22 @@ self.addEventListener("activate", (event) => {
 // Enhanced fetch event with intelligent caching strategy
 self.addEventListener("fetch", (event) => {
   // Skip non-GET requests
-  if (event.request.method !== 'GET') return;
-  
+  if (event.request.method !== "GET") return;
+
   // Skip cross-origin requests for external APIs
-  if (!event.request.url.startsWith(self.location.origin) && 
-      !event.request.url.includes('cdn.tailwindcss.com') &&
-      !event.request.url.includes('cdnjs.cloudflare.com')) {
+  if (
+    !event.request.url.startsWith(self.location.origin) &&
+    !event.request.url.includes("cdn.tailwindcss.com") &&
+    !event.request.url.includes("cdnjs.cloudflare.com")
+  ) {
     return;
   }
-  
+
   event.respondWith(
     (async () => {
       try {
         // For version.json, always try network first
-        if (event.request.url.includes('version.json')) {
+        if (event.request.url.includes("version.json")) {
           try {
             const networkResponse = await fetch(event.request);
             if (networkResponse.ok) {
@@ -220,47 +229,50 @@ self.addEventListener("fetch", (event) => {
               return networkResponse;
             }
           } catch (error) {
-            console.log('📡 Network unavailable, serving cached version.json');
+            console.log("📡 Network unavailable, serving cached version.json");
           }
         }
-        
+
         // Check cache first for other resources
         const cachedResponse = await caches.match(event.request);
-        
+
         if (cachedResponse) {
           // Serve from cache and update in background for critical resources
-          if (criticalResources.some(url => event.request.url.includes(url))) {
+          if (
+            criticalResources.some((url) => event.request.url.includes(url))
+          ) {
             // Background update for critical resources
-            fetch(event.request).then(response => {
-              if (response.ok) {
-                const cache = caches.open(CACHE_NAME);
-                cache.then(c => c.put(event.request, response.clone()));
-              }
-            }).catch(() => {});
+            fetch(event.request)
+              .then(async (response) => {
+                if (response.ok) {
+                  const cache = await caches.open(CACHE_NAME);
+                  await cache.put(event.request, response.clone());
+                }
+              })
+              .catch(() => {});
           }
           return cachedResponse;
         }
-        
+
         // If not in cache, fetch from network
         const networkResponse = await fetch(event.request);
-        
+
         if (networkResponse.ok) {
           // Cache successful responses
           const cache = await caches.open(CACHE_NAME);
           cache.put(event.request, networkResponse.clone());
         }
-        
+
         return networkResponse;
-        
       } catch (error) {
         console.warn(`⚠️ Fetch failed for ${event.request.url}:`, error);
-        
+
         // Return offline fallback for navigation requests
-        if (event.request.mode === 'navigate') {
+        if (event.request.mode === "navigate") {
           const cache = await caches.open(CACHE_NAME);
           return cache.match(`${baseUrl}index.html`);
         }
-        
+
         throw error;
       }
     })()
@@ -270,7 +282,7 @@ self.addEventListener("fetch", (event) => {
 // Background sync for offline prophecy generation and updates
 self.addEventListener("sync", (event) => {
   console.log(`🔄 Background sync triggered: ${event.tag}`);
-  
+
   if (event.tag === "background-sync") {
     event.waitUntil(doBackgroundSync());
   } else if (event.tag === "version-check") {
@@ -281,27 +293,27 @@ self.addEventListener("sync", (event) => {
 async function doBackgroundSync() {
   try {
     console.log("📡 Background sync: Checking for updates...");
-    
+
     // Check for app updates
     const hasUpdates = await checkForUpdates();
-    
+
     // Clean expired cache entries
     const isExpired = await isCacheExpired();
     if (isExpired) {
       console.log("🧹 Cache expired, refreshing...");
       await cacheResources();
     }
-    
+
     // Notify clients of sync completion
     const clients = await self.clients.matchAll();
-    clients.forEach(client => {
+    clients.forEach((client) => {
       client.postMessage({
-        type: 'BACKGROUND_SYNC_COMPLETE',
+        type: "BACKGROUND_SYNC_COMPLETE",
         hasUpdates,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     });
-    
+
     console.log("✅ Background sync completed");
   } catch (error) {
     console.error("❌ Background sync failed:", error);
@@ -311,7 +323,7 @@ async function doBackgroundSync() {
 // Push notifications for prophecy alerts
 self.addEventListener("push", (event) => {
   console.log("📩 Push notification received");
-  
+
   const defaultOptions = {
     body: "New mystical prophecy awaits your discovery...",
     icon: `${baseUrl}assets/images/icon-192.jpg`,
@@ -320,7 +332,7 @@ self.addEventListener("push", (event) => {
     data: {
       dateOfArrival: Date.now(),
       primaryKey: Math.random(),
-      version: APP_VERSION
+      version: APP_VERSION,
     },
     actions: [
       {
@@ -341,11 +353,11 @@ self.addEventListener("push", (event) => {
     ],
     tag: "oracle-prophecy",
     requireInteraction: false,
-    silent: false
+    silent: false,
   };
 
   let options = defaultOptions;
-  
+
   if (event.data) {
     try {
       const payload = event.data.json();
@@ -363,30 +375,30 @@ self.addEventListener("push", (event) => {
 // Enhanced notification click handling
 self.addEventListener("notificationclick", (event) => {
   console.log(`🖱️ Notification clicked: ${event.action}`);
-  
+
   event.notification.close();
 
   event.waitUntil(
     (async () => {
-      const clients = await self.clients.matchAll({ type: 'window' });
-      
+      const clients = await self.clients.matchAll({ type: "window" });
+
       if (event.action === "explore") {
         // Open or focus existing window
         if (clients.length > 0) {
           const client = clients[0];
-          if ('focus' in client) {
+          if ("focus" in client) {
             await client.focus();
           }
           client.postMessage({
-            type: 'NOTIFICATION_ACTION',
-            action: 'explore'
+            type: "NOTIFICATION_ACTION",
+            action: "explore",
           });
         } else {
           await self.clients.openWindow(baseUrl);
         }
       } else if (event.action === "later") {
         // Schedule reminder (register background sync)
-        await self.registration.sync.register('reminder-prophecy');
+        await self.registration.sync.register("reminder-prophecy");
       } else if (event.action === "close" || !event.action) {
         // Just close notification (default behavior)
         console.log("📴 Notification dismissed");
@@ -398,26 +410,26 @@ self.addEventListener("notificationclick", (event) => {
 // Message handling from clients
 self.addEventListener("message", (event) => {
   console.log(`📨 Message received from client:`, event.data);
-  
+
   if (event.data && event.data.type) {
     switch (event.data.type) {
-      case 'SKIP_WAITING':
+      case "SKIP_WAITING":
         self.skipWaiting();
         break;
-        
-      case 'GET_VERSION':
+
+      case "GET_VERSION":
         event.ports[0].postMessage({
-          type: 'VERSION_INFO',
+          type: "VERSION_INFO",
           version: APP_VERSION,
-          buildTimestamp: BUILD_TIMESTAMP
+          buildTimestamp: BUILD_TIMESTAMP,
         });
         break;
-        
-      case 'FORCE_UPDATE':
+
+      case "FORCE_UPDATE":
         event.waitUntil(checkForUpdates());
         break;
-        
-      case 'CLEAR_CACHE':
+
+      case "CLEAR_CACHE":
         event.waitUntil(
           caches.delete(CACHE_NAME).then(() => {
             console.log("🗑️ Cache cleared by user request");
@@ -425,7 +437,7 @@ self.addEventListener("message", (event) => {
           })
         );
         break;
-        
+
       default:
         console.log(`⚠️ Unknown message type: ${event.data.type}`);
     }
@@ -442,24 +454,32 @@ self.addEventListener("unhandledrejection", (event) => {
 });
 
 // Periodic background sync (if supported)
-if ('periodicsync' in self.registration) {
-  self.addEventListener('periodicsync', (event) => {
-    if (event.tag === 'oracle-update-check') {
+if ("periodicsync" in self.registration) {
+  self.addEventListener("periodicsync", (event) => {
+    if (event.tag === "oracle-update-check") {
       event.waitUntil(checkForUpdates());
     }
   });
 }
 
-console.log(`🔮 Oracle Mode Service Worker v${APP_VERSION} loaded successfully`);
+console.log(
+  `🔮 Oracle Mode Service Worker v${APP_VERSION} loaded successfully`
+);
 console.log(`📅 Build timestamp: ${new Date(BUILD_TIMESTAMP).toISOString()}`);
-console.log(`🌍 Environment: ${isProduction ? 'Production' : 'Development'}`);
+console.log(`🌍 Environment: ${isProduction ? "Production" : "Development"}`);
 console.log(`📁 Base URL: ${baseUrl}`);
 
 // Report ready status
-self.addEventListener('fetch', () => {
-  // This will only run once, when the SW is ready
-  if (!self.__ORACLE_SW_READY) {
-    self.__ORACLE_SW_READY = true;
-    console.log("🎯 Oracle Mode Service Worker is ready to serve prophecies!");
-  }
-}, { once: true });
+self.addEventListener(
+  "fetch",
+  () => {
+    // This will only run once, when the SW is ready
+    if (!self.__ORACLE_SW_READY) {
+      self.__ORACLE_SW_READY = true;
+      console.log(
+        "🎯 Oracle Mode Service Worker is ready to serve prophecies!"
+      );
+    }
+  },
+  { once: true }
+);
