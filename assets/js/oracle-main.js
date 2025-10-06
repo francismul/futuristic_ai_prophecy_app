@@ -1732,7 +1732,199 @@ class OracleApp {
   }
 }
 
+// Version Management and Update System
+class VersionManager {
+  constructor() {
+    this.currentVersion = "1.0.3";
+    this.versionCheckInterval = 30 * 60 * 1000; // 30 minutes
+    this.updateAvailable = false;
+    this.updateNotificationShown = false;
+    this.notificationCooldown = 10 * 60 * 1000; // 10 minutes cooldown between notifications
+    this.lastNotificationTime = 0;
+    this.init();
+  }
+
+  async init() {
+    this.setupServiceWorkerListeners();
+    this.startPeriodicVersionCheck();
+    await this.checkVersion();
+    console.log(`🔮 Oracle Mode v${this.currentVersion} initialized`);
+  }
+
+  setupServiceWorkerListeners() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        this.handleServiceWorkerMessage(event.data);
+      });
+
+      // Listen for service worker updates
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('🔄 Service worker updated, reloading...');
+        window.location.reload();
+      });
+    }
+  }
+
+  handleServiceWorkerMessage(data) {
+    switch (data.type) {
+      case 'NEW_VERSION_AVAILABLE':
+        this.showUpdateNotification(data.version);
+        break;
+      case 'SW_ACTIVATED':
+        console.log(`✅ Service Worker v${data.version} activated`);
+        break;
+      case 'BACKGROUND_SYNC_COMPLETE':
+        if (data.hasUpdates) {
+          this.showUpdateNotification();
+        }
+        break;
+      case 'NOTIFICATION_ACTION':
+        if (data.action === 'explore') {
+          this.scrollToRandomProphecy();
+        }
+        break;
+    }
+  }
+
+  async checkVersion() {
+    try {
+      const response = await fetch('./version.json?t=' + Date.now());
+      if (response.ok) {
+        const versionData = await response.json();
+        if (versionData.version !== this.currentVersion) {
+          this.updateAvailable = true;
+          this.showUpdateNotification(versionData.version);
+          return true;
+        }
+      }
+    } catch (error) {
+      console.warn('⚠️ Version check failed:', error);
+    }
+    return false;
+  }
+
+  showUpdateNotification(newVersion = null) {
+    // Check if enough time has passed since last notification
+    const now = Date.now();
+    if (this.updateNotificationShown && (now - this.lastNotificationTime) < this.notificationCooldown) {
+      console.log('⏰ Update notification on cooldown, skipping...');
+      return;
+    }
+    
+    this.updateNotificationShown = true;
+    this.lastNotificationTime = now;
+
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-emerald-600 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm';
+    notification.style.zIndex = '9999';
+    
+    const versionText = newVersion ? ` v${newVersion}` : '';
+    notification.innerHTML = `
+      <div class="flex items-center space-x-3">
+        <div class="flex-shrink-0">
+          <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+        </div>
+        <div class="flex-1">
+          <p class="font-mono text-sm font-medium">🔮 Update Available${versionText}</p>
+          <p class="font-mono text-xs opacity-90 mt-1">New prophecies and improvements ready</p>
+        </div>
+        <div class="flex space-x-2">
+          <button class="update-btn bg-emerald-800 hover:bg-emerald-700 px-3 py-1 rounded text-xs font-mono transition-colors">
+            Update
+          </button>
+          <button class="dismiss-btn text-emerald-200 hover:text-white px-2 py-1 text-xs font-mono">
+            ✕
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Add event listeners
+    notification.querySelector('.update-btn').addEventListener('click', () => {
+      this.performUpdate();
+      notification.remove();
+    });
+
+    notification.querySelector('.dismiss-btn').addEventListener('click', () => {
+      notification.remove();
+      // Reset notification flag after dismiss to allow future notifications
+      setTimeout(() => {
+        this.resetNotificationFlag();
+      }, 60000); // Reset after 1 minute
+    });
+
+    // Auto-dismiss after 10 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+        // Reset notification flag after auto-dismiss
+        setTimeout(() => {
+          this.resetNotificationFlag();
+        }, 60000); // Reset after 1 minute
+      }
+    }, 10000);
+  }
+
+  async performUpdate() {
+    // Reset notification flag since we're applying the update
+    this.resetNotificationFlag();
+    
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      // Tell the service worker to skip waiting
+      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+    } else {
+      // Fallback: hard reload
+      window.location.reload(true);
+    }
+  }
+
+  scrollToRandomProphecy() {
+    // Scroll to a random prophecy position
+    const randomOffset = Math.floor(Math.random() * 5) * window.innerHeight;
+    window.scrollTo({
+      top: randomOffset,
+      behavior: 'smooth'
+    });
+  }
+
+  startPeriodicVersionCheck() {
+    setInterval(() => {
+      this.checkVersion();
+    }, this.versionCheckInterval);
+  }
+
+  resetNotificationFlag() {
+    this.updateNotificationShown = false;
+    console.log('🔄 Notification flag reset - future updates can be shown');
+  }
+
+  getVersionInfo() {
+    return {
+      version: this.currentVersion,
+      updateAvailable: this.updateAvailable,
+      notificationCooldownActive: (Date.now() - this.lastNotificationTime) < this.notificationCooldown,
+      timestamp: new Date().toISOString()
+    };
+  }
+}
+
 // Initialize app when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
-  new OracleApp();
+  // Initialize version manager first
+  const versionManager = new VersionManager();
+  
+  // Initialize main app
+  const oracleApp = new OracleApp();
+  
+  // Make version manager available globally for debugging
+  window.OracleVersion = versionManager;
+  
+  // Log version info to console
+  console.log('🔮 Oracle Mode - AI Prophecy Generator');
+  console.log('📊 Version:', versionManager.currentVersion);
+  console.log('🌐 PWA Support:', 'serviceWorker' in navigator);
+  console.log('📱 Mobile Device:', /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+  console.log('🎯 Ready to serve prophecies!');
 });
