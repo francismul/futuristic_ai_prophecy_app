@@ -1,5 +1,5 @@
 // Oracle Mode Service Worker - Enhanced Version Management
-const APP_VERSION = "1.0.3";
+const APP_VERSION = "1.0.4";
 const CACHE_NAME = `oracle-mode-cache-v${APP_VERSION}`;
 const CACHE_PREFIX = "oracle-mode-cache-v";
 

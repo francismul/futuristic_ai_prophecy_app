@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.4] - 2025-11-15
+
 ### Added
 - Version tracking system with automatic cache invalidation
 - Enhanced service worker with smart cache management
@@ -18,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Service worker now properly cleans old cache versions
+- Service worker registration path corrected for local development
 
 ## [1.0.3] - 2025-10-06
 
@@ -107,6 +110,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
+- **1.0.4**: Version Tracking & Service Worker Enhancement Release
 - **1.0.3**: Sci-Fi Interface Enhancement & Shadow Fix Release
 - **1.0.2**: Scroll Snap & Touch Enhancement Release  
 - **1.0.1**: Card Styling & UX Improvement Release

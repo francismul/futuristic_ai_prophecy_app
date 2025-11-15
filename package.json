@@ -1,6 +1,6 @@
 {
   "name": "oracle-mode-ai-prophecy-generator",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A futuristic AI prophecy generator PWA with immersive 3D backgrounds",
   "main": "index.html",
   "scripts": {
