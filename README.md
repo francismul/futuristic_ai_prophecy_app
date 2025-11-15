@@ -1,14 +1,14 @@
 # 🔮 Oracle Mode - AI Prophecy Generator
 
-[![Version](https://img.shields.io/badge/version-1.0.3-blue.svg)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.4-blue.svg)](./CHANGELOG.md)
 [![PWA](https://img.shields.io/badge/PWA-ready-green.svg)](./manifest.json)
 [![License](https://img.shields.io/badge/license-MIT-orange.svg)](./LICENSE)
 [![Offline](https://img.shields.io/badge/offline-supported-brightgreen.svg)](./sw.js)
 
 A futuristic, client-side PWA that generates mystical prophecies using advanced randomness and immersive 3D backgrounds. Experience animated Three.js visuals, scroll/swipe to reveal prophecies, and install as a Progressive Web App for offline access.
 
-> **Latest Release**: v1.0.3 "Cosmic Nexus" - Sci-Fi Interface Enhancement & Shadow Fix Release  
-> **Release Date**: October 6, 2025  
+> **Latest Release**: v1.0.4 "Version Nexus" - Version Tracking & Service Worker Enhancement Release  
+> **Release Date**: November 15, 2025  
 > **[View Changelog](./CHANGELOG.md)** | **[Version History](#version-history)**
 
 ---
@@ -74,6 +74,7 @@ A futuristic, client-side PWA that generates mystical prophecies using advanced 
 
 | Version | Codename | Release Date | Key Features |
 |---------|----------|--------------|--------------|
+| 1.0.4 | Version Nexus | 2025-11-15 | Version Tracking, Service Worker Enhancement |
 | 1.0.3 | Cosmic Nexus | 2025-10-06 | Sci-Fi Interface, Shadow Fixes |
 | 1.0.2 | Snap Nexus | 2025-10-06 | TikTok-style Scrolling, Touch Enhancement |
 | 1.0.1 | Card Genesis | 2025-10-06 | Enhanced Card Styling, UX Improvements |
